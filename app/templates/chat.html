@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner AI Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Plan Your Trip with AI</h1>
+
+        <form id="trip-form">
+            <label for="departure-date">Departure Date:</label>
+            <input type="date" id="departure-date" required>
+
+            <label for="return-date">Return Date:</label>
+            <input type="date" id="return-date" required>
+
+            <label for="hotel-preference">Hotel Preference:</label>
+            <input type="text" id="hotel-preference" placeholder="e.g., 5-star, budget" required>
+
+            <label for="activities">Activities:</label>
+            <input type="text" id="activities" placeholder="e.g., sightseeing, hiking" required>
+
+            <button type="submit">Plan My Trip</button>
+        </form>
+
+        <div id="chat-box">
+            <!-- Chat messages will appear here -->
+        </div>
+
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Ask more about your trip..." autocomplete="off" required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('trip-form').onsubmit = async function (e) {
+            e.preventDefault();
+            const departureDate = document.getElementById('departure-date').value;
+            const returnDate = document.getElementById('return-date').value;
+            const hotelPreference = document.getElementById('hotel-preference').value;
+            const activities = document.getElementById('activities').value;
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<div class="user-message">You: Plan a trip from ${departureDate} to ${returnDate}, with a stay in a ${hotelPreference} hotel, including activities: ${activities}.</div>`;
+
+            const response = await fetch('/plan_trip', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    departure_date: departureDate,
+                    return_date: returnDate,
+                    hotel_preference: hotelPreference,
+                    activities: activities
+                })
+            });
+            const data = await response.json();
+
+            const formattedResponse = data.response.replace(/\n/g, '<br>').replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+            chatBox.innerHTML += `<div class="ai-message">AI: ${formattedResponse}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+
+        document.getElementById('chat-form').onsubmit = async function (e) {
+            e.preventDefault();
+            const userInput = document.getElementById('user-input').value;
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<div class="user-message">You: ${userInput}</div>`;
+            document.getElementById('user-input').value = '';
+
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userInput })
+            });
+            const data = await response.json();
+
+            chatBox.innerHTML += `<div class="ai-message">AI: ${data.response}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+    </script>
+</body>
+</html>
