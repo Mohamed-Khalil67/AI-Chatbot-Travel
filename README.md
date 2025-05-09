@@ -17,7 +17,7 @@ This project is a conversational AI chatbot built with Hugging Face's GPT-2 mode
 
 ## Installation  
 1. Clone the repository:  
-   `git clone https://github.com/yourusername/ai-chatbot.git`  
+   `git clone https://github.com/yourusername/ai-chatbot.git](https://github.com/Mohamed-Khalil67/AI-Chatbot-Travel.git`  
    `cd ai-chatbot`  
 
 2. Install Python dependencies:  
